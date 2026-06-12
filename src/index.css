@@ -1,0 +1,7 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0A0E1A; color: #E8ECF4; overflow-x: hidden; }
+::selection { background: #00C9FF30; color: #00C9FF; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0A0E1A; }
+::-webkit-scrollbar-thumb { background: #00C9FF40; border-radius: 4px; }
