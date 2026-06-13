@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import ChatBot from "./ChatBot.jsx";
+import SEO from "./SEO.jsx";
 
 // ── SVG SOCIAL ICONS ─────────────────────────────────────────────────────────
 const IconInstagram = () => (
@@ -315,6 +316,7 @@ export default function App() {
 
       {/* ── PAGES ── */}
       <div className="fade-in" key={page} style={{ paddingTop: 70 }}>
+        <SEO page={page} />
         {page === "Home" && <HomePage navigate={navigate} canvasRef={canvasRef} />}
         {page === "Services" && <ServicesPage navigate={navigate} />}
         {page === "Technology" && <TechnologyPage navigate={navigate} />}
