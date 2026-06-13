@@ -95,7 +95,7 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", email: "", company: "", service: "", message: "" });
-  const [formStatus, setFormStatus] = useState("idle"); // idle | sending | sent | error
+  const [formStatus, setFormStatus] = useState("idle"); // idle | sending | sent | verify | error
   const canvasRef = useRef(null);
   const animRef = useRef(null);
 
@@ -150,28 +150,41 @@ export default function App() {
     }
     setFormStatus("sending");
     try {
+      // Using FormData (multipart) — more compatible than JSON for FormSubmit
+      const fd = new FormData();
+      fd.append("name", formData.name);
+      fd.append("email", formData.email);
+      fd.append("company", formData.company || "Not provided");
+      fd.append("service", formData.service || "Not specified");
+      fd.append("message", formData.message);
+      fd.append("_subject", `New Makrees Inquiry from ${formData.name}`);
+      fd.append("_template", "table");
+      fd.append("_captcha", "false");
+      fd.append("_honey", "");
+
       const res = await fetch("https://formsubmit.co/ajax/madhusmita2894@gmail.com", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          company: formData.company || "Not provided",
-          service: formData.service || "Not specified",
-          message: formData.message,
-          _subject: `New Makrees Inquiry from ${formData.name}`,
-          _template: "table",
-        }),
+        headers: { "Accept": "application/json" },
+        body: fd,
       });
       const data = await res.json();
       if (data.success === "true" || data.success === true) {
         setFormStatus("sent");
       } else {
-        setFormStatus("error");
+        setFormStatus("verify");
       }
     } catch {
-      setFormStatus("error");
+      setFormStatus("verify");
     }
+  };
+
+  const handleMailto = () => {
+    const subject = encodeURIComponent(`New Makrees Inquiry from ${formData.name}`);
+    const body = encodeURIComponent(
+      `Name: ${formData.name}\nEmail: ${formData.email}\nCompany: ${formData.company || "N/A"}\nService: ${formData.service || "N/A"}\n\nMessage:\n${formData.message}`
+    );
+    window.open(`mailto:madhusmita2894@gmail.com?subject=${subject}&body=${body}`, "_blank");
+    setFormStatus("sent");
   };
 
   const navigate = (p) => setPage(p);
@@ -306,7 +319,7 @@ export default function App() {
         {page === "Services" && <ServicesPage navigate={navigate} />}
         {page === "Technology" && <TechnologyPage navigate={navigate} />}
         {page === "About" && <AboutPage navigate={navigate} />}
-        {page === "Contact" && <ContactPage formData={formData} setFormData={setFormData} formStatus={formStatus} handleSubmit={handleSubmit} />}
+        {page === "Contact" && <ContactPage formData={formData} setFormData={setFormData} formStatus={formStatus} handleSubmit={handleSubmit} handleMailto={handleMailto} />}
       </div>
 
       <Footer navigate={navigate} />
@@ -708,7 +721,7 @@ function AboutPage({ navigate }) {
 }
 
 // ── CONTACT ───────────────────────────────────────────────────────────────────
-function ContactPage({ formData, setFormData, formStatus, handleSubmit }) {
+function ContactPage({ formData, setFormData, formStatus, handleSubmit, handleMailto }) {
   const update = (k, v) => setFormData(p => ({ ...p, [k]: v }));
   return (
     <div>
@@ -780,7 +793,18 @@ function ContactPage({ formData, setFormData, formStatus, handleSubmit }) {
                     <button className="btn-primary" onClick={handleSubmit} disabled={formStatus === "sending"} style={{ fontSize: 14, padding: "14px", opacity: formStatus === "sending" ? 0.7 : 1, cursor: formStatus === "sending" ? "not-allowed" : "pointer" }}>
                       {formStatus === "sending" ? "⏳ Sending..." : "Send Message & Get Your Growth Plan →"}
                     </button>
-                    {formStatus === "error" && <p style={{ textAlign: "center", fontSize: 13, color: "#E53935" }}>Something went wrong. Please email us directly at growth@makrees.com</p>}
+                    {(formStatus === "error" || formStatus === "verify") && (
+                      <div style={{ background: "rgba(229,57,53,.06)", border: "1.5px solid rgba(229,57,53,.2)", borderRadius: 12, padding: "16px", textAlign: "center" }}>
+                        <p style={{ fontSize: 13, color: "#E53935", fontWeight: 600, marginBottom: 6 }}>⚠️ Submission needs activation</p>
+                        <p style={{ fontSize: 12, color: "#6B7A99", lineHeight: 1.6, marginBottom: 12 }}>
+                          Please check <strong>madhusmita2894@gmail.com</strong> inbox for an email from <strong>FormSubmit</strong> and click <strong>"Activate Form"</strong>. Then try again.
+                        </p>
+                        <p style={{ fontSize: 12, color: "#6B7A99", marginBottom: 12 }}>OR send directly right now:</p>
+                        <button onClick={handleMailto} style={{ background: "linear-gradient(135deg,#1B2B8F,#E53935)", color: "#fff", border: "none", padding: "10px 24px", borderRadius: 50, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>
+                          📧 Send via Gmail directly
+                        </button>
+                      </div>
+                    )}
                     <p style={{ textAlign: "center", fontSize: 11, color: "#B0B8CC" }}>We respond within 24 hours. No spam, ever.</p>
                   </div>
                 </>
