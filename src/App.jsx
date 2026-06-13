@@ -150,7 +150,7 @@ export default function App() {
     }
     setFormStatus("sending");
     try {
-      const res = await fetch("https://formsubmit.co/ajax/growth@makrees.com", {
+      const res = await fetch("https://formsubmit.co/ajax/madhusmita2894@gmail.com", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body: JSON.stringify({
@@ -758,7 +758,7 @@ function ContactPage({ formData, setFormData, formStatus, handleSubmit }) {
                 <div style={{ textAlign: "center", padding: "60px 20px" }}>
                   <div style={{ fontSize: 56, marginBottom: 18 }}>🚀</div>
                   <h2 style={{ fontFamily: "'Space Grotesk',sans-serif", fontSize: 26, fontWeight: 700, color: "#0D1136", marginBottom: 12 }}>Message Sent!</h2>
-                  <p style={{ color: "#6B7A99", fontSize: 14, lineHeight: 1.75 }}>Thank you! Your message has been sent to <strong>growth@makrees.com</strong>. Our team will get back to you within 24 hours.</p>
+                  <p style={{ color: "#6B7A99", fontSize: 14, lineHeight: 1.75 }}>Thank you! Your message has been received. Our team will get back to you within 24 hours.</p>
                 </div>
               ) : (
                 <>
